@@ -148,6 +148,10 @@ module.exports.shuffle = function(shuffle) {
   exec('osascript -e \'tell application "Spotify" to set shuffling to ' + shuffle + '\'');
 };
 
+module.exports.open = function() {
+  exec('osascript -e \'tell application "Spotify" to activate\'');
+};
+
 module.exports.getAlbumCover = function(id) {
   mod = this;
   config = copyConfig();

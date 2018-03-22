@@ -7,7 +7,14 @@ const BrowserWindow = electron.BrowserWindow;
 const mb = menubar();
 
 mb.setOption('preload-window', true);
-mb.setOption('height', 464);
+mb.setOption('height', 332);
+mb.setOption('width', 300);
+mb.setOption('y', 32);
+mb.setOption('alwaysOnTop', true);
+
+mb.on('after-create-window', function() {
+  mb.window.setResizable(false);
+})
 
 const spotify = require('./spotify.js');
 
@@ -91,6 +98,10 @@ mb.on('ready', function ready() {
 mb.on('after-create-window', function() {
   spotify.setWindow(mb.window);
   mb.window.webContents.send('settings', settings);
+});
+
+ipcMain.on('open_spotify', function(event) {
+  spotify.open();
 });
 
 ipcMain.on('seek', function(event, percent) {

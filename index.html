@@ -11,10 +11,10 @@
       }
       @-webkit-keyframes trackInfoIn {
         from {
-          bottom: -64px;
+          bottom: -46px;
         }
         to {
-          bottom: 0;
+          bottom: -8px;
         }
       }
       @-webkit-keyframes trackInfoBackgroundIn {
@@ -22,7 +22,7 @@
           background-position: 0px -405px;
         }
         to {
-          background-position: 0px -341px;
+          background-position: 0px -239px;
         }
       }
       body {
@@ -44,7 +44,7 @@
         width: 100vw;
         height: 100vh;
         text-align: center;
-        padding-top: 180px;
+        padding-top: 160px;
         font-size: 24px;
       }
       #longer {
@@ -64,32 +64,27 @@
         box-shadow: 0 0 5px rgba(10, 10, 10, .65);
         border-bottom: 1px solid #222;
         height: 48px;
+
+        display: flex;
+        justify-content: space-around;
       }
       #control-bar i {
         font-size: 30px;
         cursor: pointer;
       }
       #shuffle-btn {
-        position: absolute;
-        left: 60px;
         margin-top: 8px;
         font-size: 16px !important;
       }
       #prev-btn {
-        position: absolute;
-        left: 130px;
         margin-top: 3px;
         font-size: 24px !important;
       }
       #next-btn {
-        position: absolute;
-        right: 130px;
         margin-top: 3px;
         font-size: 24px !important;
       }
       #repeat-btn {
-        position: absolute;
-        right: 60px;
         margin-top: 8px;
         font-size: 16px !important;
       }
@@ -97,18 +92,30 @@
         position: absolute;
         top: 64px;
         width: 100vw;
-        height: 100vw;
+      }
+      #pos-wrapper {
+        z-index: 99;
+
+        position: absolute;
+        top: 64px;
+        left: 0;
+        width: 100vw;
+        height: 12px;
       }
       #position {
-        z-index: 99;
-        background-color: #23CF5F;
-        position: absolute;
-        bottom: 0;
+        position: relative;
         left: 0;
+        background-color: #23CF5F;
         width: 0vw;
-        height: 4px;
-        box-shadow: 0 0 20px rgba(35, 207, 95, .85);
+        top: -4px;
+        height: 8px;
+        box-shadow: 0 0 10px rgba(35, 207, 95, .85);
+        transition: top 0.2s;
+        transition-timing-function: ease-in-out;
         border-radius: 2px;
+      }
+      #pos-wrapper:hover #position {
+        top: 0;
       }
       #track-info {
         z-index: 50;
@@ -122,8 +129,10 @@
         /*background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(39, 39, 39, 1));*/
         /*background-color: rgba(39, 39, 39, 0.6);*/
         overflow: hidden;
+        cursor: pointer;
       }
       #track-info-background {
+        cursor: pointer;
         margin-top: -5px;
         width: 100vw;
         background-size: cover;
@@ -155,7 +164,6 @@
         top: 64px;
         left: 0;
         width: 100vw;
-        height: 100vw;
       }
       #seek-pos {
         z-index: 91;
@@ -182,9 +190,16 @@
       <i id="repeat-btn" class="fa fa-retweet" aria-hidden="true" onclick="repeat()"></i>
     </div>
     <img id="cover">
-    <div id="position"></div>
-    <div id="track-info"><div id="track-info-background"></div><div style="z-index: 51; position: relative;"><span id="track-title"></span><br><span id="track-artist"></span> - <span id="track-album"></span></div></div>
-    <div id="seek" onclick="seek(event)" onmouseenter="displayTrackInfo()" onmousemove="getPos(event)" onmouseleave="stopTracking()">
+    <div id="pos-wrapper" onclick="seek(event)" onmouseenter="displayTrackInfo()" onmousemove="getPos(event)" onmouseleave="stopTracking()">
+        <div id="position"></div>
+    </div>
+    <div id="track-info" class="track-info-in">
+      <div id="track-info-background" class="track-info-background-in"></div>
+      <div onclick="open_spotify()" style="cursor: pointer; z-index: 51; position: relative;">
+        <span id="track-title"></span><br><span id="track-artist"></span> - <span id="track-album"></span>
+      </div>
+    </div>
+    <div id="seek">
       <div id="seek-pos">0:00</div>
     </div>
     <div id="loading"><span id="loading-text">ONE MOMENT</span><div id="longer"></div></div>
@@ -255,9 +270,12 @@
     function next() {
       ipc.send('skip', true);
     }
+    function open_spotify() {
+      ipc.send('open_spotify');
+    }
     function seek(event) {
       var x = event.offsetX ? (event.offsetX) : event.pageX - document.getElementById('position').offsetLeft;
-      var percent = (x / 400) * 100;
+      var percent = (x / 300) * 100;
       document.getElementById('position').setAttribute('style', 'width: ' + percent + 'vw;');
       ipc.send('seek', percent);
     }
@@ -265,26 +283,26 @@
       x = event.clientX;
       y = event.clientY;
       document.getElementById('seek-pos').innerHTML = secToStamp((x / 400) * length);
-      y -= 94;
-      x -= 24;
+      y -= 56;
+      x -= 44;
       document.getElementById('seek-pos').setAttribute('style', 'top: ' + y + 'px; left: ' + x + 'px;');
     }
     function displayTrackInfo() {
-      document.getElementById('track-info-background').className = '';
-      document.getElementById('track-info-background').offsetWidth = document.getElementById('track-info-background').offsetWidth;
-      document.getElementById('track-info-background').className = 'track-info-background-in';
-      document.getElementById('track-info').className = '';
-      document.getElementById('track-info').offsetWidth = document.getElementById('track-info').offsetWidth;
-      document.getElementById('track-info').className = 'track-info-in';
+      // document.getElementById('track-info-background').className = '';
+      // document.getElementById('track-info-background').offsetWidth = document.getElementById('track-info-background').offsetWidth;
+      // document.getElementById('track-info-background').className = 'track-info-background-in';
+      // document.getElementById('track-info').className = '';
+      // document.getElementById('track-info').offsetWidth = document.getElementById('track-info').offsetWidth;
+      // document.getElementById('track-info').className = 'track-info-in';
     }
     function stopTracking() {
       document.getElementById('seek-pos').setAttribute('style', 'top: 100vh; left: 100vw;');
-      document.getElementById('track-info-background').className = '';
-      document.getElementById('track-info-background').offsetWidth = document.getElementById('track-info-background').offsetWidth;
-      document.getElementById('track-info-background').className = 'track-info-background-out';
-      document.getElementById('track-info').className = '';
-      document.getElementById('track-info').offsetWidth = document.getElementById('track-info').offsetWidth;
-      document.getElementById('track-info').className = 'track-info-out';
+      // document.getElementById('track-info-background').className = '';
+      // document.getElementById('track-info-background').offsetWidth = document.getElementById('track-info-background').offsetWidth;
+      // document.getElementById('track-info-background').className = 'track-info-background-out';
+      // document.getElementById('track-info').className = '';
+      // document.getElementById('track-info').offsetWidth = document.getElementById('track-info').offsetWidth;
+      // document.getElementById('track-info').className = 'track-info-out';
     }
     function secToStamp(sec) {
       return Math.floor(sec / 60) + ':' + (sec % 60 < 10 ? '0' : '') + Math.floor(sec % 60);
