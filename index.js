@@ -13,6 +13,7 @@ mb.setOption('y', 32);
 mb.setOption('alwaysOnTop', true);
 
 mb.on('after-create-window', function() {
+  mb.window.openDevTools();
   mb.window.setResizable(false);
 })
 
@@ -24,7 +25,7 @@ let settingsWindow;
 let aboutWindow;
 
 let appLauncher = new AutoLaunch({
-  name: 'spotifymenubar'
+  name: 'Baritonev2'
 });
 
 let settings = {

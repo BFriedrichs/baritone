@@ -9,22 +9,6 @@
         src: local('Montserrat-Regular'), url(Montserrat.woff2) format('woff2');
         unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
       }
-      @-webkit-keyframes trackInfoIn {
-        from {
-          bottom: -46px;
-        }
-        to {
-          bottom: -8px;
-        }
-      }
-      @-webkit-keyframes trackInfoBackgroundIn {
-        from {
-          background-position: 0px -405px;
-        }
-        to {
-          background-position: 0px -239px;
-        }
-      }
       body {
         font-family: 'Montserrat', sans-serif;
         background: #272727;
@@ -33,6 +17,8 @@
         height: 100vh;
         overflow: hidden;
         -webkit-user-select: none;
+        flex-direction: column;
+        display: flex;
       }
       #loading {
         position: absolute;
@@ -53,10 +39,9 @@
         color: #6f6f6f;
       }
       #control-bar {
+        position: relative;
         background: #272727;
-        position: absolute;
         z-index: 100;
-        top: 0;
         padding-top: 16px;
         color: #fff;
         width: 100vw;
@@ -88,17 +73,16 @@
         margin-top: 8px;
         font-size: 16px !important;
       }
-      #cover {
-        position: absolute;
-        top: 64px;
-        width: 100vw;
+      #coverWrapper {
+        position: relative;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background-size: cover;
       }
       #pos-wrapper {
         z-index: 99;
-
-        position: absolute;
-        top: 64px;
-        left: 0;
         width: 100vw;
         height: 12px;
       }
@@ -119,21 +103,27 @@
       }
       #track-info {
         z-index: 50;
-        position: absolute;
         text-align: center;
-        width: 100vw;
-        bottom: -64px;
+        position: relative;
+        /* width: 100vw; */
+        /* overflow: hidden; */
         color: #fff;
-        font-size: 14px;
-        height: 54px;
-        /*background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(39, 39, 39, 1));*/
-        /*background-color: rgba(39, 39, 39, 0.6);*/
+        /* display: flex; */
+        font-size: 13px;
+        /* justify-content: center; */
+        /* flex-direction: column; */
+        height: 64px;
+        /* flex: 1; */
+        /* background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(39, 39, 39, 1)); */
+        /* background-color: rgba(39, 39, 39, 0.6); */
         overflow: hidden;
         cursor: pointer;
+        bottom: -16px;
       }
       #track-info-background {
         cursor: pointer;
         margin-top: -5px;
+        position: absolute;
         width: 100vw;
         background-size: cover;
         height: 64px;
@@ -142,21 +132,16 @@
         -webkit-filter: blur(5px) saturate(2) brightness(0.5);
         margin-bottom: -54px;
         transform: scale(1.03);
+        background-position: 0px -239px;
+      }
+      #track-click {
+        cursor: pointer;
+        z-index: 51;
+        margin-top: 6px;
+        position: relative;
       }
       #track-title {
         font-size: 16px;
-      }
-      .track-info-in {
-        -webkit-animation: 0.25s cubic-bezier(0,.84,.31,1) 0s 1 normal both running trackInfoIn;
-      }
-      .track-info-out {
-        -webkit-animation: 0.25s cubic-bezier(0,.84,.31,1) 0s 1 reverse both running trackInfoIn;
-      }
-      .track-info-background-in {
-        -webkit-animation: 0.25s cubic-bezier(0,.84,.31,1) 0s 1 normal both running trackInfoBackgroundIn;
-      }
-      .track-info-background-out {
-        -webkit-animation: 0.25s cubic-bezier(0,.84,.31,1) 0s 1 reverse both running trackInfoBackgroundIn;
       }
       #seek {
         z-index: 90;
@@ -189,14 +174,15 @@
       <i id="next-btn" class="fa fa-step-forward" aria-hidden="true" onclick="next()"></i>
       <i id="repeat-btn" class="fa fa-retweet" aria-hidden="true" onclick="repeat()"></i>
     </div>
-    <img id="cover">
-    <div id="pos-wrapper" onclick="seek(event)" onmouseenter="displayTrackInfo()" onmousemove="getPos(event)" onmouseleave="stopTracking()">
-        <div id="position"></div>
-    </div>
-    <div id="track-info" class="track-info-in">
-      <div id="track-info-background" class="track-info-background-in"></div>
-      <div onclick="open_spotify()" style="cursor: pointer; z-index: 51; position: relative;">
-        <span id="track-title"></span><br><span id="track-artist"></span> - <span id="track-album"></span>
+    <div id="coverWrapper">
+      <div id="pos-wrapper" onclick="seek(event)" onmouseenter="displayTrackInfo()" onmousemove="getPos(event)" onmouseleave="stopTracking()">
+          <div id="position"></div>
+      </div>
+      <div id="track-info" class="track-info-in">
+        <div id="track-info-background" class="track-info-background-in"></div>
+        <div onclick="open_spotify()" id="track-click">
+          <span id="track-title"></span><br><span id="track-artist"></span> - <span id="track-album"></span>
+        </div>
       </div>
     </div>
     <div id="seek">
@@ -213,12 +199,10 @@
     setTimeout(function() {
       document.getElementById('longer').innerHTML = 'Please make sure Spotify is running and that you have an internet connection.';
     }, 10000);
-    document.getElementById('cover').onload = function() {
-      document.getElementById('loading').style.visibility = 'hidden';
-    };
     ipc.on('coverUrl', function(url) {
-      document.getElementById('cover').src = url;
-      document.getElementById('track-info-background').style.backgroundImage = 'url(' + url + ')';
+      document.getElementById('coverWrapper').style.backgroundImage = `url(${url})`;
+      document.getElementById('track-info-background').style.backgroundImage = `url(${url})`;
+      document.getElementById('loading').style.visibility = 'hidden';
     });
     ipc.on('position', function(percent) {
       document.getElementById('position').setAttribute('style', 'width: ' + percent + 'vw;');
