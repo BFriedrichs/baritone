@@ -132,7 +132,7 @@
         -webkit-filter: blur(5px) saturate(2) brightness(0.5);
         margin-bottom: -54px;
         transform: scale(1.03);
-        background-position: 0px -239px;
+        background-position: 0px -235px;
       }
       #track-click {
         cursor: pointer;
@@ -191,7 +191,7 @@
     <div id="loading"><span id="loading-text">ONE MOMENT</span><div id="longer"></div></div>
   </body>
   <script>
-    var ipc = require('ipc');
+    var ipc = require('electron').ipcRenderer;
     var shuffling = false;
     var repeating = false;
     var length = 0;
@@ -199,44 +199,44 @@
     setTimeout(function() {
       document.getElementById('longer').innerHTML = 'Please make sure Spotify is running and that you have an internet connection.';
     }, 10000);
-    ipc.on('coverUrl', function(url) {
+    ipc.on('coverUrl', function(sender, url) {
       document.getElementById('coverWrapper').style.backgroundImage = `url(${url})`;
       document.getElementById('track-info-background').style.backgroundImage = `url(${url})`;
       document.getElementById('loading').style.visibility = 'hidden';
     });
-    ipc.on('position', function(percent) {
+    ipc.on('position', function(sender, percent) {
       document.getElementById('position').setAttribute('style', 'width: ' + percent + 'vw;');
     });
-    ipc.on('playing', function(playing) {
+    ipc.on('playing', function(sender, playing) {
       document.getElementById('play-btn').className = 'fa fa-' + (playing ? 'pause' : 'play');
     });
-    ipc.on('shuffle', function(shuffle) {
+    ipc.on('shuffle', function(sender, shuffle) {
       document.getElementById('shuffle-btn').setAttribute('style', 'color: #' + (shuffle ? '23CF5F' : '6f6f6f') + ';');
       shuffling = shuffle;
     });
-    ipc.on('repeat', function(repeat) {
+    ipc.on('repeat', function(sender, repeat) {
       document.getElementById('repeat-btn').setAttribute('style', 'color: #' + (repeat ? '23CF5F' : '6f6f6f') + ';');
       repeating = repeat;
     });
-    ipc.on('length', function(data) {
+    ipc.on('length', function(sender, data) {
       length = data;
     });
-    ipc.on('running', function(running) {
+    ipc.on('running', function(sender, running) {
       if (!running) {
         document.getElementById('loading').style.visibility = 'visible';
         document.getElementById('loading-text').innerHTML = 'NO CONNECTION';
       }
     });
-    ipc.on('track', function(track) {
+    ipc.on('track', function(sender, track) {
       document.getElementById('track-title').innerHTML = track;
     });
-    ipc.on('artist', function(artist) {
+    ipc.on('artist', function(sender, artist) {
       document.getElementById('track-artist').innerHTML = artist;
     });
-    ipc.on('album', function(album) {
+    ipc.on('album', function(sender, album) {
       document.getElementById('track-album').innerHTML = album;
     });
-    ipc.on('settings', function(settings) {
+    ipc.on('settings', function(sender, settings) {
       document.getElementById('track-info').style.display = settings.showTrackTitle ? 'initial' : 'none';
     });
     function shuffle() {

@@ -13,13 +13,12 @@ mb.setOption('y', 32);
 mb.setOption('alwaysOnTop', true);
 
 mb.on('after-create-window', function() {
-  mb.window.openDevTools();
+  // mb.window.openDevTools();
   mb.window.setResizable(false);
 })
 
 const spotify = require('./spotify.js');
-
-const ipcMain = require('electron').ipcMain;
+const ipcMain = electron.ipcMain;
 
 let settingsWindow;
 let aboutWindow;

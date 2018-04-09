@@ -10,10 +10,11 @@
     "request": "^2.83.0"
   },
   "devDependencies": {
+    "devtron": "^1.4.0",
     "electron-prebuilt": "^0.37.8"
   },
   "scripts": {
-    "test": "electron ."
+    "test": "electron --inspect=9090 ."
   },
   "author": "Tianyi Ma <tn.ma@outlook.com>",
   "license": "MIT"
